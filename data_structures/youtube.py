@@ -11,7 +11,7 @@ class YouTubeChannel(DataBase):
     def __init__(self,
                  id: str,
                  title: str,
-                 created_at: datetime,
+                 created_at: Optional[datetime] = None,
                  description: Optional[str] = None,
                  lang: Optional[str] = None,
                  country: Optional[str] = None):
