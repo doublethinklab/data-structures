@@ -40,8 +40,6 @@ class YouTubeComment(DataBase):
                  comment_thread_id: str,
                  created_at: datetime,
                  text: str,
-                 num_likes: int,
-                 retrieved: datetime,
                  replied_to_comment_id: Optional[str] = None):
         super().__init__(
             id=id,
@@ -50,8 +48,6 @@ class YouTubeComment(DataBase):
             comment_thread_id=comment_thread_id,
             created_at=created_at,
             text=text,
-            num_likes=num_likes,
-            retrieved=retrieved,
             replied_to_comment_id=replied_to_comment_id)
         self.id = id
         self.video_id = video_id
@@ -60,8 +56,6 @@ class YouTubeComment(DataBase):
         self.replied_to_comment_id = replied_to_comment_id
         self.created_at = created_at
         self.text = text  # snippet.textOriginal
-        self.num_likes = num_likes
-        self.retrieved = retrieved
 
 
 class YouTubeCommentStats(DataBase):
