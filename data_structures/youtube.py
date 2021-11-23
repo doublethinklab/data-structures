@@ -58,7 +58,7 @@ class YouTubeComment(DataBase):
                  comment_thread_id: str,
                  created_at: datetime,
                  text: str,
-                 stats: List[YouTubeCommentStats],
+                 stats: List[YouTubeCommentStats] = [],
                  replied_to_comment_id: Optional[str] = None):
         super().__init__(
             id=id,
@@ -106,7 +106,7 @@ class YouTubeVideo(DataBase):
                  created_at: datetime,
                  title: str,
                  description: str,
-                 stats: List[YouTubeVideoStats]):
+                 stats: List[YouTubeVideoStats] = []):
         super().__init__(
             id=id,
             channel_id=channel_id,
