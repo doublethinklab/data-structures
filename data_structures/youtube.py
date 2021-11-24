@@ -30,6 +30,52 @@ class YouTubeChannel(DataBase):
         self.created_at = created_at
 
 
+class YouTubeVideoStats(DataBase):
+
+    def __init__(self,
+                 video_id: str,
+                 collected_at: datetime,
+                 num_views: int,
+                 num_likes: int,
+                 num_comments: int,
+                 num_dislikes: Optional[int] = None):
+        super().__init__(
+            video_id=video_id,
+            collected_at=collected_at,
+            num_views=num_views,
+            num_likes=num_likes,
+            num_comments=num_comments,
+            num_dislikes=num_dislikes)
+
+
+class YouTubeVideo(DataBase):
+    # https://developers.google.com/youtube/v3/docs/videos
+
+    def __init__(self,
+                 id : str,
+                 channel_id: str,
+                 created_at: datetime,
+                 title: str,
+                 description: str,
+                 channel: Optional[YouTubeChannel] = None,
+                 stats: Optional[List[YouTubeVideoStats]] = None):
+        super().__init__(
+            id=id,
+            channel_id=channel_id,
+            created_at=created_at,
+            title=title,
+            description=description,
+            channel=channel,
+            stats=stats)
+        self.id = id
+        self.channel_id = channel_id
+        self.created_at = created_at
+        self.title = title
+        self.description = description
+        self.channel = channel
+        self.stats = stats
+
+
 class YouTubeCommentStats(DataBase):
 
     def __init__(self,
@@ -59,6 +105,8 @@ class YouTubeComment(DataBase):
                  created_at: datetime,
                  text: str,
                  replied_to_comment_id: Optional[str] = None,
+                 channel: Optional[YouTubeChannel] = None,
+                 video: Optional[YouTubeVideo] = None,
                  stats: Optional[List[YouTubeCommentStats]] = None):
         super().__init__(
             id=id,
@@ -67,6 +115,8 @@ class YouTubeComment(DataBase):
             comment_thread_id=comment_thread_id,
             created_at=created_at,
             text=text,
+            channel=channel,
+            video=video,
             stats=stats,
             replied_to_comment_id=replied_to_comment_id)
         self.id = id
@@ -76,47 +126,6 @@ class YouTubeComment(DataBase):
         self.replied_to_comment_id = replied_to_comment_id
         self.created_at = created_at
         self.text = text  # snippet.textOriginal
-        self.stats = stats
-
-
-class YouTubeVideoStats(DataBase):
-
-    def __init__(self,
-                 video_id: str,
-                 collected_at: datetime,
-                 num_views: int,
-                 num_likes: int,
-                 num_comments: int,
-                 num_dislikes: Optional[int] = None):
-        super().__init__(
-            video_id=video_id,
-            collected_at=collected_at,
-            num_views=num_views,
-            num_likes=num_likes,
-            num_comments=num_comments,
-            num_dislikes=num_dislikes)
-
-
-class YouTubeVideo(DataBase):
-    # https://developers.google.com/youtube/v3/docs/videos
-
-    def __init__(self,
-                 id : str,
-                 channel_id: str,
-                 created_at: datetime,
-                 title: str,
-                 description: str,
-                 stats: Optional[List[YouTubeVideoStats]] = None):
-        super().__init__(
-            id=id,
-            channel_id=channel_id,
-            created_at=created_at,
-            title=title,
-            description=description,
-            stats=stats)
-        self.id = id
-        self.channel_id = channel_id
-        self.created_at = created_at
-        self.title = title
-        self.description = description
+        self.channel = channel
+        self.video = video
         self.stats = stats
