@@ -22,12 +22,54 @@ class YouTubeChannel(DataBase):
             description=description,
             lang=lang,
             country=country)
-        self.id = id
-        self.title = title
-        self.description = description
-        self.lang = lang
-        self.country = country
-        self.created_at = created_at
+
+    @property
+    def id(self) -> str:
+        return self.__getitem__('id')
+
+    @id.setter
+    def id(self, value: str):
+        self.__setitem__('id', value)
+
+    @property
+    def title(self) -> str:
+        return self.__getitem__('title')
+
+    @title.setter
+    def title(self, value: str):
+        self.__setitem__('title', value)
+
+    @property
+    def description(self) -> str:
+        return self.__getitem__('description')
+
+    @description.setter
+    def description(self, value: str):
+        self.__setitem__('description', value)
+
+    @property
+    def lang(self) -> str:
+        return self.__getitem__('lang')
+
+    @lang.setter
+    def lang(self, value: str):
+        self.__setitem__('lang', value)
+
+    @property
+    def country(self) -> str:
+        return self.__getitem__('country')
+
+    @country.setter
+    def country(self, value: str):
+        self.__setitem__('country', value)
+
+    @property
+    def created_at(self) -> datetime:
+        return self.__getitem__('created_at')
+
+    @created_at.setter
+    def created_at(self, value: datetime):
+        self.__setitem__('created_at', value)
 
 
 class YouTubeVideoStats(DataBase):
@@ -46,6 +88,54 @@ class YouTubeVideoStats(DataBase):
             num_likes=num_likes,
             num_comments=num_comments,
             num_dislikes=num_dislikes)
+
+    @property
+    def video_id(self) -> str:
+        return self.__getitem__('video_id')
+
+    @video_id.setter
+    def video_id(self, value: str):
+        self.__setitem__('video_id', value)
+
+    @property
+    def collected_at(self) -> datetime:
+        return self.__getitem__('collected_at')
+
+    @collected_at.setter
+    def collected_at(self, value: datetime):
+        self.__setitem__('collected_at', value)
+
+    @property
+    def num_views(self) -> int:
+        return self.__getitem__('num_views')
+
+    @num_views.setter
+    def num_views(self, value: int):
+        self.__setitem__('num_views', int)
+
+    @property
+    def num_likes(self) -> int:
+        return self.__getitem__('num_likes')
+
+    @num_likes.setter
+    def num_likes(self, value: int):
+        self.__setitem__('num_likes', value)
+
+    @property
+    def num_comments(self) -> int:
+        return self.__getitem__('num_comments')
+
+    @num_comments.setter
+    def num_comments(self, value: int):
+        self.__setitem__('num_comments', value)
+
+    @property
+    def num_dislikes(self) -> int:
+        return self.__getitem__('num_dislikes')
+
+    @num_dislikes.setter
+    def num_dislikes(self, value: int):
+        self.__setitem__('num_dislikes', value)
 
 
 class YouTubeVideo(DataBase):
@@ -67,13 +157,62 @@ class YouTubeVideo(DataBase):
             description=description,
             channel=channel,
             stats=stats)
-        self.id = id
-        self.channel_id = channel_id
-        self.created_at = created_at
-        self.title = title
-        self.description = description
-        self.channel = channel
-        self.stats = stats
+
+    @property
+    def id(self) -> str:
+        return self.__getitem__('id')
+
+    @id.setter
+    def id(self, value: str):
+        self.__setitem__('id', value)
+
+    @property
+    def channel_id(self) -> str:
+        return self.__getitem__('channel_id')
+
+    @channel_id.setter
+    def channel_id(self, value: str):
+        self.__setitem__('channel_id', value)
+
+    @property
+    def created_at(self) -> datetime:
+        return self.__getitem__('created_at')
+
+    @created_at.setter
+    def created_at(self, value: datetime):
+        self.__setitem__('created_at', value)
+
+    @property
+    def title(self) -> str:
+        return self.__getitem__('title')
+
+    @title.setter
+    def title(self, value: str):
+        self.__setitem__('title', value)
+
+    @property
+    def description(self) -> str:
+        return self.__getitem__('description')
+
+    @description.setter
+    def description(self, value: str):
+        self.__setitem__('description', value)
+
+    @property
+    def channel(self) -> YouTubeChannel:
+        return self.__getitem__('channel')
+
+    @channel.setter
+    def channel(self, value: YouTubeChannel):
+        self.__setitem__('channel', value)
+
+    @property
+    def stats(self) -> YouTubeVideoStats:
+        return self.__getitem__('stats')
+
+    @stats.setter
+    def stats(self, value: YouTubeVideoStats):
+        self.__setitem__('stats', value)
 
 
 class YouTubeCommentStats(DataBase):
@@ -88,10 +227,38 @@ class YouTubeCommentStats(DataBase):
             collected_at=collected_at,
             num_likes=num_likes,
             num_replies=num_replies)
-        self.comment_id = comment_id
-        self.collected_at = collected_at
-        self.num_likes = num_likes
-        self.num_replies = num_replies
+
+    @property
+    def comment_id(self) -> str:
+        return self.__getitem__('comment_id')
+
+    @comment_id.setter
+    def comment_id(self, value: str):
+        self.__setitem__('comment_id', value)
+
+    @property
+    def collected_at(self) -> datetime:
+        return self.__getitem__('collected_at')
+
+    @collected_at.setter
+    def collected_at(self, value: datetime):
+        self.__setitem__('collected_at', value)
+
+    @property
+    def num_likes(self) -> int:
+        return self.__getitem__('num_likes')
+
+    @num_likes.setter
+    def num_likes(self, value: int):
+        self.__setitem__('num_likes', value)
+
+    @property
+    def num_replies(self) -> int:
+        return self.__getitem__('num_replies')
+
+    @num_replies.setter
+    def num_replies(self, value: int):
+        self.__setitem__('num_replies', value)
 
 
 class YouTubeComment(DataBase):
@@ -119,13 +286,83 @@ class YouTubeComment(DataBase):
             video=video,
             stats=stats,
             replied_to_comment_id=replied_to_comment_id)
-        self.id = id
-        self.video_id = video_id
-        self.author_channel_id = author_channel_id
-        self.comment_thread_id = comment_thread_id
-        self.replied_to_comment_id = replied_to_comment_id
-        self.created_at = created_at
-        self.text = text  # snippet.textOriginal
-        self.channel = channel
-        self.video = video
-        self.stats = stats
+
+    @property
+    def id(self) -> str:
+        return self.__getitem__('id')
+
+    @id.setter
+    def id(self, value: str):
+        self.__setitem__('id', value)
+
+    @property
+    def video_id(self) -> str:
+        return self.__getitem__('video_id')
+
+    @video_id.setter
+    def video_id(self, value: str):
+        self.__setitem__('video_id', value)
+
+    @property
+    def author_channel_id(self) -> str:
+        return self.__getitem__('author_channel_id')
+
+    @author_channel_id.setter
+    def author_channel_id(self, value: str):
+        self.__setitem__('author_channel_id', value)
+
+    @property
+    def comment_thread_id(self) -> str:
+        return self.__getitem__('comment_thread_id')
+
+    @comment_thread_id.setter
+    def comment_thread_id(self, value: str):
+        self.__setitem__('comment_thread_id', value)
+
+    @property
+    def replied_to_comment_id(self) -> str:
+        return self.__getitem__('replied_to_comment_id')
+
+    @replied_to_comment_id.setter
+    def replied_to_comment_id(self, value: str):
+        self.__setitem__('replied_to_comment_id', value)
+
+    @property
+    def created_at(self) -> datetime:
+        return self.__getitem__('created_at')
+
+    @created_at.setter
+    def created_at(self, value: datetime):
+        self.__setitem__('created_at', value)
+
+    @property
+    def text(self) -> str:
+        return self.__getitem__('text')
+
+    @text.setter
+    def text(self, value: str):
+        self.__setitem__('text', value)
+
+    @property
+    def channel(self) -> YouTubeChannel:
+        return self.__getitem__('channel')
+
+    @channel.setter
+    def channel(self, value: YouTubeChannel):
+        self.__setitem__('channel', value)
+
+    @property
+    def video(self) -> YouTubeVideo:
+        return self.__getitem__('video')
+
+    @video.setter
+    def video(self, value: YouTubeVideo):
+        self.__setitem__('video', value)
+
+    @property
+    def stats(self) -> List[YouTubeCommentStats]:
+        return self.__getitem__('stats')
+
+    @stats.setter
+    def stats(self, value: List[YouTubeCommentStats]):
+        self.__setitem__('stats', value)
