@@ -14,14 +14,16 @@ class YouTubeChannel(DataBase):
                  created_at: Optional[datetime] = None,
                  description: Optional[str] = None,
                  lang: Optional[str] = None,
-                 country: Optional[str] = None):
+                 country: Optional[str] = None,
+                 **kwargs):
         super().__init__(
             id=id,
             title=title,
             created_at=created_at,
             description=description,
             lang=lang,
-            country=country)
+            country=country,
+            **kwargs)
 
     @property
     def id(self) -> str:
@@ -80,14 +82,16 @@ class YouTubeVideoStats(DataBase):
                  num_views: int,
                  num_likes: int,
                  num_comments: int,
-                 num_dislikes: Optional[int] = None):
+                 num_dislikes: Optional[int] = None,
+                 **kwargs):
         super().__init__(
             video_id=video_id,
             collected_at=collected_at,
             num_views=num_views,
             num_likes=num_likes,
             num_comments=num_comments,
-            num_dislikes=num_dislikes)
+            num_dislikes=num_dislikes,
+            **kwargs)
 
     @property
     def video_id(self) -> str:
@@ -148,7 +152,8 @@ class YouTubeVideo(DataBase):
                  title: str,
                  description: str,
                  channel: Optional[YouTubeChannel] = None,
-                 stats: Optional[List[YouTubeVideoStats]] = None):
+                 stats: Optional[List[YouTubeVideoStats]] = None,
+                 **kwargs):
         super().__init__(
             id=id,
             channel_id=channel_id,
@@ -156,7 +161,8 @@ class YouTubeVideo(DataBase):
             title=title,
             description=description,
             channel=channel,
-            stats=stats)
+            stats=stats,
+            **kwargs)
 
     @property
     def id(self) -> str:
@@ -221,12 +227,14 @@ class YouTubeCommentStats(DataBase):
                  comment_id: str,
                  collected_at: datetime,
                  num_likes: int,
-                 num_replies: int):
+                 num_replies: int,
+                 **kwargs):
         super().__init__(
             comment_id=comment_id,
             collected_at=collected_at,
             num_likes=num_likes,
-            num_replies=num_replies)
+            num_replies=num_replies,
+            **kwargs)
 
     @property
     def comment_id(self) -> str:
@@ -274,7 +282,8 @@ class YouTubeComment(DataBase):
                  replied_to_comment_id: Optional[str] = None,
                  channel: Optional[YouTubeChannel] = None,
                  video: Optional[YouTubeVideo] = None,
-                 stats: Optional[List[YouTubeCommentStats]] = None):
+                 stats: Optional[List[YouTubeCommentStats]] = None,
+                 **kwargs):
         super().__init__(
             id=id,
             video_id=video_id,
@@ -285,7 +294,8 @@ class YouTubeComment(DataBase):
             channel=channel,
             video=video,
             stats=stats,
-            replied_to_comment_id=replied_to_comment_id)
+            replied_to_comment_id=replied_to_comment_id,
+            **kwargs)
 
     @property
     def id(self) -> str:
