@@ -1,5 +1,21 @@
 from collections.abc import MutableMapping
+from datetime import datetime, date
+import json
 from typing import Any
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code.
+
+    https://stackoverflow.com/questions/11875770/how-to-overcome-datetime-datetime-not-json-serializable
+    """
+
+    if isinstance(obj, datetime):
+        return obj.strftime('%Y-%m-%d %H:%M:%S')
+    elif isinstance(obj, date):
+        return obj.strftime('%Y-%m-%d')
+    else:
+        raise TypeError("Type %s not serializable" % type(obj))
 
 
 class DataBase(MutableMapping):
@@ -23,3 +39,6 @@ class DataBase(MutableMapping):
 
     def __len__(self) -> int:
         return len(self.store)
+
+    def to_json(self) -> str:
+        return json.dumps(self.store, default=json_serial)
