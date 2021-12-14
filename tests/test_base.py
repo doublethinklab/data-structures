@@ -3,10 +3,41 @@ import json
 from json import JSONDecodeError
 import unittest
 
+from data_structures.twitter import TwitterUser
 from data_structures.youtube import YouTubeChannel, YouTubeVideo
 
 
 class TestBaseFunctionality(unittest.TestCase):
+
+    def test_equality_comparison_true_when_equal(self):
+        user1 = TwitterUser(
+            id=1,
+            name='1',
+            username='1',
+            verified=False,
+            created_at=datetime(2021, 1, 1, 2, 2, 2))
+        user2 = TwitterUser(
+            id=1,
+            name='1',
+            username='1',
+            verified=False,
+            created_at=datetime(2021, 1, 1, 2, 2, 2))
+        self.assertTrue(user1 == user2)
+
+    def test_equality_comparison_false_when_not_equal(self):
+        user1 = TwitterUser(
+            id=1,
+            name='1',
+            username='1',
+            verified=False,
+            created_at=datetime(2021, 1, 1, 2, 2, 2))
+        user2 = TwitterUser(
+            id=2,
+            name='2',
+            username='2',
+            verified=False,
+            created_at=datetime(2021, 1, 1, 2, 2, 2))
+        self.assertFalse(user1 == user2)
 
     def test_unpack(self):
         def f(**kwargs):
