@@ -151,6 +151,10 @@ class YouTubeVideo(DataBase):
                  created_at: datetime,
                  title: str,
                  description: str,
+                 duration: Optional[str] = None,
+                 dimension: Optional[str] = None,
+                 definition: Optional[str] = None,
+                 projection: Optional[str] = None,
                  channel: Optional[YouTubeChannel] = None,
                  stats: Optional[List[YouTubeVideoStats]] = None,
                  **kwargs):
@@ -160,6 +164,10 @@ class YouTubeVideo(DataBase):
             created_at=created_at,
             title=title,
             description=description,
+            duration=duration,
+            dimension=dimension,
+            definition=definition,
+            projection=projection,
             channel=channel,
             stats=stats,
             **kwargs)
@@ -203,6 +211,38 @@ class YouTubeVideo(DataBase):
     @description.setter
     def description(self, value: str):
         self.__setitem__('description', value)
+
+    @property
+    def duration(self) -> str:
+        return self.__getitem__('duration')
+
+    @duration.setter
+    def duration(self, value: str):
+        self.__setitem__('duration', value)
+
+    @property
+    def dimension(self) -> str:
+        return self.__getitem__('dimension')
+
+    @dimension.setter
+    def dimension(self, value: str):
+        self.__setitem__('dimension', value)
+
+    @property
+    def definition(self) -> str:
+        return self.__getitem__('definition')
+
+    @definition.setter
+    def definition(self, value: str):
+        self.__setitem__('definition', value)
+
+    @property
+    def projection(self) -> str:
+        return self.__getitem__('projection')
+
+    @projection.setter
+    def projection(self, value: str):
+        self.__setitem__('projection', value)
 
     @property
     def channel(self) -> YouTubeChannel:
