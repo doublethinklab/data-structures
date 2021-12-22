@@ -1,3 +1,4 @@
+from abc import ABC
 from collections.abc import MutableMapping
 from datetime import datetime, date
 import json
@@ -20,7 +21,7 @@ def json_serial(obj):
         raise TypeError("Type %s not serializable" % type(obj))
 
 
-class DataBase(MutableMapping):
+class DataBase(MutableMapping, ABC):
     # https://stackoverflow.com/questions/3387691/how-to-perfectly-override-a-dict
 
     def __init__(self, *args, **kwargs):

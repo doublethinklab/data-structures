@@ -115,7 +115,7 @@ class YouTubeVideoStats(DataBase):
 
     @num_views.setter
     def num_views(self, value: int):
-        self.__setitem__('num_views', int)
+        self.__setitem__('num_views', value)
 
     @property
     def num_likes(self) -> int:
@@ -142,11 +142,33 @@ class YouTubeVideoStats(DataBase):
         self.__setitem__('num_dislikes', value)
 
 
+class YouTubeVideoTag(DataBase):
+
+    def __init__(self, video_id: str, tag: str):
+        super().__init__(video_id=video_id, tag=tag)
+
+    @property
+    def video_id(self) -> str:
+        return self.__getitem__('video_id')
+
+    @video_id.setter
+    def video_id(self, value: str):
+        self.__setitem__('video_id', value)
+
+    @property
+    def tag(self) -> str:
+        return self.__getitem__('tag')
+
+    @tag.setter
+    def tag(self, value: str):
+        self.__setitem__('tag', value)
+
+
 class YouTubeVideo(DataBase):
     # https://developers.google.com/youtube/v3/docs/videos
 
     def __init__(self,
-                 id : str,
+                 id: str,
                  channel_id: str,
                  created_at: datetime,
                  title: str,
@@ -157,6 +179,7 @@ class YouTubeVideo(DataBase):
                  projection: Optional[str] = None,
                  channel: Optional[YouTubeChannel] = None,
                  stats: Optional[List[YouTubeVideoStats]] = None,
+                 tags: Optional[List[YouTubeVideoTag]] = None,
                  **kwargs):
         super().__init__(
             id=id,
@@ -170,6 +193,7 @@ class YouTubeVideo(DataBase):
             projection=projection,
             channel=channel,
             stats=stats,
+            tags=tags,
             **kwargs)
 
     @property
@@ -259,6 +283,14 @@ class YouTubeVideo(DataBase):
     @stats.setter
     def stats(self, value: YouTubeVideoStats):
         self.__setitem__('stats', value)
+
+    @property
+    def tags(self) -> List[YouTubeVideoTag]:
+        return self.__getitem__('tags')
+
+    @tags.setter
+    def tags(self, value: List[YouTubeVideoTag]):
+        self.__setitem__('tags', value)
 
 
 class YouTubeCommentStats(DataBase):

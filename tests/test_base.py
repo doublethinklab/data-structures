@@ -100,6 +100,7 @@ class TestBaseFunctionality(unittest.TestCase):
             definition=None,
             projection=None,
             stats=None,
+            tags=None,
             channel=json.dumps(dict(
                 id='1',
                 title='1',
