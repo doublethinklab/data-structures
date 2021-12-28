@@ -300,12 +300,14 @@ class YouTubeCommentStats(DataBase):
                  collected_at: datetime,
                  num_likes: int,
                  num_replies: int,
+                 rank: Optional[int] = None,
                  **kwargs):
         super().__init__(
             comment_id=comment_id,
             collected_at=collected_at,
             num_likes=num_likes,
             num_replies=num_replies,
+            rank=rank,
             **kwargs)
 
     @property
@@ -339,6 +341,14 @@ class YouTubeCommentStats(DataBase):
     @num_replies.setter
     def num_replies(self, value: int):
         self.__setitem__('num_replies', value)
+
+    @property
+    def rank(self) -> int:
+        return self.__getitem__('rank')
+
+    @rank.setter
+    def rank(self, value: int):
+        self.__setitem__('rank', value)
 
 
 class YouTubeComment(DataBase):
