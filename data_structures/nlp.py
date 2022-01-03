@@ -17,11 +17,43 @@ class Token:
         self.entity_type = entity_type
         self.is_stop = is_stop
 
+    def __eq__(self, other):
+        # this is really just for testing so far
+        if isinstance(other, type(self)):
+            if self.__dict__ != other.__dict__:
+                for attr, value in self.__dict__.items():
+                    if self.__dict__[attr] != other.__dict__[attr]:
+                        print('%s\t%s != %s' % (attr,
+                                                self.__dict__[attr],
+                                                other.__dict__[attr]))
+            else:
+                return True
+        return False
+
     def __len__(self):
         return len(self.text)
 
     def __repr__(self):
         return self.text
+
+    def split(self,
+              split_on: str,
+              copy_meta_attrs: bool = False) -> List:
+        if split_on in self.text:
+            splits = self.text.split(split_on)
+            # TODO: what really makes sense here?
+            tokens = [
+                Token(
+                    text=x,
+                    pos=self.pos if copy_meta_attrs else None,
+                    lemma=self.lemma if copy_meta_attrs else None,
+                    is_entity=self.is_entity if copy_meta_attrs else None,
+                    entity_type=self.entity_type if copy_meta_attrs else None,
+                    is_stop=self.is_stop if copy_meta_attrs else None)
+                for x in splits]
+            return tokens
+        else:
+            return [self]
 
 
 class Sentence:
