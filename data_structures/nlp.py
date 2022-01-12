@@ -1,4 +1,6 @@
+import pickle
 from typing import List, Optional
+import dill
 
 
 class Token:
@@ -55,6 +57,9 @@ class Token:
         else:
             return [self]
 
+    def serialize(self):
+        return dill.dumps(self)
+
 
 class Sentence:
 
@@ -75,6 +80,9 @@ class Sentence:
     @property
     def text(self) -> str:
         return ' '.join([str(x) for x in self.tokens])
+
+    def serialize(self):
+        return dill.dumps(self)
 
 
 class Paragraph:
@@ -107,6 +115,8 @@ class Paragraph:
             tokens += s.tokens
         return tokens
 
+    def serialize(self):
+        return dill.dumps(self)
 
 class Document:
 
@@ -137,3 +147,6 @@ class Document:
         for s in self.paragraphs:
             tokens += s.tokens
         return tokens
+
+    def serialize(self):
+        return dill.dumps(self)
