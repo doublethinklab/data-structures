@@ -1,23 +1,30 @@
-import pickle
 from typing import List, Optional
 import dill
 
 
 class Token:
 
-    def __init__(self,
-                 text: str,
-                 pos: Optional[str] = None,
-                 lemma: Optional[str] = None,
-                 is_entity: Optional[bool] = None,
-                 entity_type: Optional[str] = None,
-                 is_stop: Optional[bool] = None):
+    def __init__(
+            self,
+            text: str,
+            pos: Optional[str] = None,
+            lemma: Optional[str] = None,
+            is_entity: Optional[bool] = None,
+            entity_type: Optional[str] = None,
+            is_stop: Optional[bool] = None,
+            uid: Optional[str] = None,
+            dependency_head_uid: Optional[str] = None,
+            dependency_type: Optional[str] = None
+    ):
         self.text = text
         self.pos = pos
         self.lemma = lemma
         self.is_entity = is_entity
         self.entity_type = entity_type
         self.is_stop = is_stop
+        self.uid = uid
+        self.dependency_head_uid = dependency_head_uid
+        self.dependency_type = dependency_type
 
     def __eq__(self, other):
         # this is really just for testing so far
@@ -38,9 +45,11 @@ class Token:
     def __repr__(self):
         return self.text
 
-    def split(self,
-              split_on: str,
-              copy_meta_attrs: bool = False) -> List:
+    def split(
+            self,
+            split_on: str,
+            copy_meta_attrs: bool = False
+    ) -> List:
         if split_on in self.text:
             splits = self.text.split(split_on)
             # TODO: what really makes sense here?
@@ -63,7 +72,10 @@ class Token:
 
 class Sentence:
 
-    def __init__(self, tokens: List[Token]):
+    def __init__(
+            self,
+            tokens: List[Token]
+    ):
         self.tokens = tokens
 
     def __len__(self):
@@ -76,6 +88,11 @@ class Sentence:
     @property
     def entities(self) -> List[Token]:
         return [x for x in self.tokens if x.is_entity]
+
+    @property
+    def noun_phrases(self) -> List[List[Token]]:
+        # infer from the dependency parse
+        raise NotImplementedError
 
     @property
     def text(self) -> str:
@@ -117,6 +134,7 @@ class Paragraph:
 
     def serialize(self):
         return dill.dumps(self)
+
 
 class Document:
 
