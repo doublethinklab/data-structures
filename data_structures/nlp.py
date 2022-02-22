@@ -66,6 +66,73 @@ class Token:
         return dill.dumps(self)
 
 
+def merge_tokens(
+        tokens: List[Token],
+        merge_det: bool = False,
+        word_join_char: str = ' '
+) -> List[Token]:
+    """Merge tokens into one token.
+
+    The main place this is used is merging phrases or entities.
+
+    Args:
+        tokens: List[Token].
+        merge_det: Bool. Whether or not to merge determiners such as `the` or
+          `a` into the resulting token.
+        word_join_char: String. For English, for example, this is a space (the
+          default value). For Mandarin, this should be ''.
+
+    Returns:
+        List[Token].
+    """
+    tokens_out = []
+
+    # if the first token is a determiner, decide whether or not to separate it
+    if tokens[0].pos == 'DET' and not merge_det:
+        det = tokens[0]
+        # make sure it is not marked as an entity
+        det.is_entity = False
+        det.entity_type = ''
+        # append it to the tokens to return
+        tokens_out.append(det)
+        # remove it from the initial token list
+        tokens.remove(det)
+
+    # if there was only a determiner for some reason, return now
+    if len(tokens) == 0:
+        return tokens_out
+
+    # with the remaining tokens, merge them based on the defined strategy
+    root = get_root(tokens)
+    merged = Token(
+        # the text is simply joined on the join char
+        text=word_join_char.join([x.text for x in tokens]),
+        # a simple heuristic is to take the last POS, which is usually a NOUN
+        # that is modified by the tokens to its left
+        pos=tokens[-1].pos,
+        # add the lemmas together
+        lemma=word_join_char.join([x.lemma for x in tokens]),
+        # again, use the last token as a heuristic
+        is_entity=tokens[-1].is_entity,
+        entity_type=tokens[-1].entity_type,
+        # this is only a stop if all tokens are stops
+        is_stop=all(x.is_stop for x in tokens),
+        # this should be the root/head of the subsequence
+        ix=root.ix,
+        dependency_head_ix=root.dependency_head_ix,
+        dependency_type=root.dependency_type)
+
+    tokens_out.append(merged)
+
+    return tokens_out
+
+
+def get_root(subtree: List[Token]) -> Token:
+    return next(
+        x for x in subtree
+        if x.dependency_head_ix not in [y.ix for y in subtree])
+
+
 class Sentence:
 
     def __init__(
