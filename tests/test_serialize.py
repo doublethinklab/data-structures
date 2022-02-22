@@ -2,7 +2,7 @@ import dill
 import unittest
 
 from data_structures.nlp import Token, Sentence, Paragraph, Document
-from data_structures.serializer import Serializer
+
 
 class TestTokenSerialization(unittest.TestCase):
 
@@ -23,12 +23,17 @@ class TestTokenSerialization(unittest.TestCase):
         self.assertEqual(los_angeles.is_entity, _los_angeles.is_entity)
         self.assertEqual(los_angeles.entity_type, _los_angeles.entity_type)
         self.assertEqual(los_angeles.is_stop, _los_angeles.is_stop)
-        self.assertEqual(los_angeles.split(split_on=' '), _los_angeles.split(split_on=' '))
+        self.assertEqual(los_angeles.split(split_on=' '),
+                         _los_angeles.split(split_on=' '))
+
 
 class TestSentence(unittest.TestCase):
+
     def test_serialization(self):
         pass
 
+
 class TestDocument(unittest.TestCase):
+
     def test_serialization(self):
         pass

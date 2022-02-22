@@ -53,7 +53,10 @@ class Token:
                     lemma=self.lemma if copy_meta_attrs else None,
                     is_entity=self.is_entity if copy_meta_attrs else None,
                     entity_type=self.entity_type if copy_meta_attrs else None,
-                    is_stop=self.is_stop if copy_meta_attrs else None)
+                    is_stop=self.is_stop if copy_meta_attrs else None,
+                    ix=None,   # no way to do this without moving others so None
+                    dependency_head_ix=self.dependency_head_ix if copy_meta_attrs else None,
+                    dependency_type=self.dependency_type if copy_meta_attrs else None)
                 for x in splits]
             return tokens
         else:
@@ -78,23 +81,35 @@ class Sentence:
     def __repr__(self):
         return self.text
 
-    def _get_split_prep_nps(self, np: List[Token]) -> List[List[Token]]:
-        prep_nps = []
-        preps = [x for x in np if x.dependency_type == 'prep']
-        # basically, just add the subtrees for each prep
-        for prep in preps:
-            subtree, _ = self._get_subtree(prep.ix, np)
-            prep_nps.append(subtree)
-        return prep_nps
+    @staticmethod
+    def _drop_prep_subtree(np: List[Token], prep_ix: int) -> List[Token]:
+        prep_root = next(x for x in np if x.ix == prep_ix)
+        queue = [prep_root]
+        while len(queue) > 0:
+            children = [x for x in np if x.dependency_head_ix == prep_root.ix]
+            for child in children:
+                queue.append(child)
+            np.remove(prep_root)
+            queue.remove(prep_root)
+            if len(queue) > 0:
+                prep_root = queue[0]
+        return np
+
+    @staticmethod
+    def _get_root_ix(subtree: List[Token]) -> int:
+        root_ix = next(
+            x.ix for x in subtree
+            if x.dependency_head_ix not in [y.ix for y in subtree])
+        return root_ix
 
     def _get_subtree(
             self,
             ix: int,
             tokens: List[Token]
     ) -> Tuple[List[Token], int]:
-        subtree = []
-        root = tokens[ix]
+        root = next(x for x in tokens if x.ix == ix)
         subtree_root_ix = root.ix
+        subtree = [root]
         queue = [root]
         while len(queue) > 0:
             children = [x for x in self.tokens
@@ -118,10 +133,35 @@ class Sentence:
         # if we have any, we check to see if they are root, if not, remove
         for x in appos:
             if x.ix != root_ix:
-                subtree.remove(x)
+                appos_subtree, _ = self._get_subtree(x.ix, subtree)
+                for y in appos_subtree:
+                    subtree.remove(y)
 
         # finally, make sure the tokens are sorted correctly before returning
         return self._sort_tokens(subtree)
+
+    @staticmethod
+    def _remove_det(subtree: List[Token]) -> List[Token]:
+        if subtree[0].dependency_type == 'det':
+            return subtree[1:]
+        return subtree
+
+    def _split_prep_nps(
+            self,
+            np: List[Token]
+    ) -> List[List[Token]]:
+        root_ix = self._get_root_ix(np)
+        prep_nps = []
+        preps = [x for x in np if x.dependency_type == 'prep']
+        # basically, just add the subtrees of parents for each prep, minus the
+        # prep subtree
+        for prep in preps:
+            if prep.ix == root_ix:
+                continue
+            subtree, _ = self._get_subtree(prep.dependency_head_ix, np)
+            subtree = self._drop_prep_subtree(subtree, prep.ix)
+            prep_nps.append(subtree)
+        return prep_nps
 
     @staticmethod
     def _sort_tokens(tokens: List[Token]) -> List[Token]:
@@ -137,18 +177,45 @@ class Sentence:
         return root.dependency_type in types_requiring_noun \
                and root.pos != 'NOUN'
 
+    def _fix_np(self, subtree: List[Token], det: bool) -> List[Token]:
+        root_ix = self._get_root_ix(subtree)
+
+        # if the subtree contains a non-root `appos`, remove that
+        subtree = self._remove_appos(subtree, root_ix)
+
+        if not det:
+            subtree = self._remove_det(subtree)
+
+        return subtree
+
+    def _np_is_valid(self, subtree: List[Token]) -> bool:
+        root_ix = self._get_root_ix(subtree)
+
+        # in the case of an attr, check that the head is a noun
+        if self._subtree_head_missing_required_noun(subtree, root_ix):
+            return False
+
+        # if the subtree is a single word, skip it
+        # NOTE: makes sense to check this last as some of the other
+        #       validation functions remove tokens
+        if len(subtree) == 1:
+            return False
+
+        # otherwise it is valid
+        return True
+
     @property
     def entities(self) -> List[Token]:
         return [x for x in self.tokens if x.is_entity]
 
-    @property
-    def noun_phrases(self) -> List[List[Token]]:
+    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+        # if det=True, determiners will be included, e.g. "a cat"
         nps = []
 
         # refer to README.md for details and examples
         target_types = [
             'nsubj', 'dobj', 'pobj', 'appos', 'attr', 'cop', 'nsubj',
-            'nsubjpass', 'obj', 'prep',
+            'nsubjpass', 'obj',
         ]
 
         for token in self.tokens:
@@ -157,29 +224,24 @@ class Sentence:
                 continue
 
             # now get the subtree
-            subtree, root_ix = self._get_subtree(token.ix)
+            subtree, root_ix = self._get_subtree(token.ix, self.tokens)
 
-            # if the subtree contains a non-root `appos`, remove that
-            subtree = self._remove_appos(subtree, root_ix)
+            # apply any necessary fixes
+            subtree = self._fix_np(subtree, det)
 
-            # in the case of an attr, check that the head is a noun
-            if self._subtree_head_missing_required_noun(subtree, root_ix):
-                continue
-
-            # if the subtree is a single word, skip it
-            # NOTE: makes sense to check this last as some of the other
-            #       validation functions remove tokens
-            if len(subtree) == 1:
-                continue
-
-            # if all validation checks pass, then we have a noun-phrase
-            nps.append(subtree)
+            # if all validation checks pass, then add the noun-phrase
+            if self._np_is_valid(subtree):
+                nps.append(subtree)
 
         # if we have a noun phrase that includes a prep, split the first half
         # as an additional NP
         split_prep_nps = []
         for np in nps:
-            split_prep_nps += self._get_split_prep_nps(np)
+            splits = self._split_prep_nps(np)
+            for snp in splits:
+                snp = self._fix_np(snp, det=det)
+                if self._np_is_valid(snp):
+                    nps.append(snp)
         nps += split_prep_nps
 
         return nps
@@ -210,6 +272,12 @@ class Paragraph:
         for x in self.sentences:
             entities += x.entities
         return entities
+
+    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+        nps = []
+        for sentence in self.sentences:
+            nps += sentence.get_noun_phrases(det=det)
+        return nps
 
     @property
     def text(self) -> str:
@@ -244,6 +312,12 @@ class Document:
         for x in self.paragraphs:
             entities += x.entities
         return entities
+
+    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+        nps = []
+        for paragraph in self.paragraphs:
+            nps += paragraph.get_noun_phrases(det=det)
+        return nps
 
     @property
     def text(self) -> str:

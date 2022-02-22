@@ -2,6 +2,7 @@ from abc import ABC
 from collections.abc import MutableMapping
 from datetime import datetime, date
 import json
+import os
 from typing import Any
 
 
@@ -11,9 +12,10 @@ def dict_equal_with_debug(a: Any, b: Any) -> bool:
         if a.__dict__ != b.__dict__:
             for attr, value in a.__dict__.items():
                 if a.__dict__[attr] != b.__dict__[attr]:
-                    print('%s\t%s != %s' % (attr,
-                                            a.__dict__[attr],
-                                            b.__dict__[attr]))
+                    if 'TEST' in os.environ and int(os.environ['TEST']) == 1:
+                        print('%s\t%s != %s' % (attr,
+                                                a.__dict__[attr],
+                                                b.__dict__[attr]))
         else:
             return True
     return False
