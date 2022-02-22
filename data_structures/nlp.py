@@ -1,6 +1,8 @@
 from typing import List, Optional
 import dill
 
+from data_structures import base
+
 
 class Token:
 
@@ -27,17 +29,7 @@ class Token:
         self.dependency_type = dependency_type
 
     def __eq__(self, other):
-        # this is really just for testing so far
-        if isinstance(other, type(self)):
-            if self.__dict__ != other.__dict__:
-                for attr, value in self.__dict__.items():
-                    if self.__dict__[attr] != other.__dict__[attr]:
-                        print('%s\t%s != %s' % (attr,
-                                                self.__dict__[attr],
-                                                other.__dict__[attr]))
-            else:
-                return True
-        return False
+        return base.dict_equal_with_debug(self, other)
 
     def __len__(self):
         return len(self.text)
