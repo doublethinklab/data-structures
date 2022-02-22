@@ -95,11 +95,23 @@ is useful to understand the below.
 - `sort_nums`: None.
 - `xcomp`: open clausal complement. "He says that you like to {xcomp->like swim}."
 
+Note, to visualize a parse in a jupyter notebook:
+
+```python
+import spacy
+nlp = spacy.load('en_core_web_lg')
+text = 'I saw a cat in a hat'
+doc = nlp(text)
+spacy.displacy.render(doc, style="dep")
+```
+
 Notes for extracting `NP`s:
 - A `nsubj` and a `dobj` are good candidates, however:
 - If a subtree consists of a single token that is a `PRON` we will want to skip:
   e.g., "{nsubj:PRON I} gave {dobj:PRON it} to him"
-- Note that an `appos` should be removed from a `NP` that includes an `appos` in its subtree.
+- Note that an `appos` should be removed from a `NP` that includes an `appos` 
+  in its subtree (but note that an `appos` is itself a `NP`). For "Sam, my brother"
+  we want "Sam" and "my brother" but not "Sam, my brother."
 - An `agent` is not a `NP`, but the `pobj` attached to it is: 
   "The man has been killed {agent by {pobj the police}}."
 - An `appos` is a `NP`: "Sam, {appos my brother}, arrived."
