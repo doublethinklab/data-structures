@@ -2,7 +2,23 @@ from abc import ABC
 from collections.abc import MutableMapping
 from datetime import datetime, date
 import json
+import os
 from typing import Any
+
+
+def dict_equal_with_debug(a: Any, b: Any) -> bool:
+    # this is really just for testing so far
+    if isinstance(b, type(a)):
+        if a.__dict__ != b.__dict__:
+            for attr, value in a.__dict__.items():
+                if a.__dict__[attr] != b.__dict__[attr]:
+                    if 'TEST' in os.environ and int(os.environ['TEST']) == 1:
+                        print('%s\t%s != %s' % (attr,
+                                                a.__dict__[attr],
+                                                b.__dict__[attr]))
+        else:
+            return True
+    return False
 
 
 def json_serial(obj):
@@ -29,17 +45,7 @@ class DataBase(MutableMapping, ABC):
         self.update(dict(*args, **kwargs))
 
     def __eq__(self, other):
-        # this is really just for testing so far
-        if isinstance(other, type(self)):
-            if self.__dict__ != other.__dict__:
-                for attr, value in self.__dict__.items():
-                    if self.__dict__[attr] != other.__dict__[attr]:
-                        print('%s\t%s != %s' % (attr,
-                                                self.__dict__[attr],
-                                                other.__dict__[attr]))
-            else:
-                return True
-        return False
+        return dict_equal_with_debug(self, other)
 
     def __getitem__(self, key: str) -> Any:
         return self.store[key]

@@ -4,5 +4,5 @@ docker run \
     --rm \
     -v ${PWD}:/data-structures \
     -w /data-structures \
-        python:3.9.5 \
+        doublethinklab/data-structures:dev \
             python -m unittest discover
