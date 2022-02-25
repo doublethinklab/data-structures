@@ -277,7 +277,11 @@ class Sentence:
     def entities(self) -> List[Token]:
         return [x for x in self.tokens if x.is_entity]
 
-    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+    def get_noun_phrases(
+            self,
+            det: bool = False,
+            max_len: int = 20
+    ) -> List[List[Token]]:
         # if det=True, determiners will be included, e.g. "a cat"
         nps = []
 
@@ -294,6 +298,10 @@ class Sentence:
 
             # now get the subtree
             subtree, root_ix = self._get_subtree(token.ix, self.tokens)
+
+            # if too long, skip right away
+            if len(subtree) > max_len:
+                continue
 
             # apply any necessary fixes
             subtree = self._fix_np(subtree, det)
@@ -342,10 +350,14 @@ class Paragraph:
             entities += x.entities
         return entities
 
-    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+    def get_noun_phrases(
+            self,
+            det: bool = False,
+            max_len: int = 20
+    ) -> List[List[Token]]:
         nps = []
         for sentence in self.sentences:
-            nps += sentence.get_noun_phrases(det=det)
+            nps += sentence.get_noun_phrases(det=det, max_len=max_len)
         return nps
 
     @property
@@ -382,10 +394,14 @@ class Document:
             entities += x.entities
         return entities
 
-    def get_noun_phrases(self, det: bool = False) -> List[List[Token]]:
+    def get_noun_phrases(
+            self,
+            det: bool = False,
+            max_len: int = 20
+    ) -> List[List[Token]]:
         nps = []
         for paragraph in self.paragraphs:
-            nps += paragraph.get_noun_phrases(det=det)
+            nps += paragraph.get_noun_phrases(det=det, max_len=max_len)
         return nps
 
     @property
