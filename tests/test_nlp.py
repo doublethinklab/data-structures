@@ -104,19 +104,6 @@ class TestMergeTokens(unittest.TestCase):
 
 class TestSentence(unittest.TestCase):
 
-    def test_get_root_ix(self):
-        tokens = [
-            Token('I', ix=0, dependency_head_ix=1, dependency_type='nsubj'),
-            Token('saw', ix=1, dependency_head_ix=None, dependency_type='root'),
-            Token('a', ix=2, dependency_head_ix=3, dependency_type='det'),
-            Token('cat', ix=3, dependency_head_ix=1, dependency_type='dobj'),
-            Token('in', ix=4, dependency_head_ix=3, dependency_type='prep'),
-            Token('a', ix=5, dependency_head_ix=6, dependency_type='det'),
-            Token('hat', ix=6, dependency_head_ix=4, dependency_type='pobj'),
-        ]
-        root_ix = Sentence._get_root_ix(tokens)
-        self.assertEqual(1, root_ix)
-
     def test_drop_prep_subtree(self):
         tokens = [
             Token('a', ix=2, dependency_head_ix=3, dependency_type='det'),

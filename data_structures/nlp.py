@@ -96,7 +96,7 @@ def merge_tokens(
         # append it to the tokens to return
         tokens_out.append(det)
         # remove it from the initial token list
-        tokens.remove(det)
+        tokens = remove_token(tokens, det)
 
     # if there was only a determiner for some reason, return now
     if len(tokens) == 0:
@@ -128,9 +128,21 @@ def merge_tokens(
 
 
 def get_root(subtree: List[Token]) -> Token:
-    return next(
-        x for x in subtree
-        if x.dependency_head_ix not in [y.ix for y in subtree])
+    root = next(
+        (x for x in subtree
+         if x.dependency_head_ix not in [y.ix for y in subtree]),
+        None)
+    # debugging while we improve this code
+    if not root:
+        print([x.text for x in subtree])
+        print([x.ix for x in subtree])
+        print([x.dependency_head_ix for x in subtree])
+        raise Exception
+    return root
+
+
+def remove_token(subtree: List[Token], token: Token) -> List[Token]:
+    return [x for x in subtree if x.ix != token.ix]
 
 
 class Sentence:
@@ -157,17 +169,10 @@ class Sentence:
             for child in children:
                 queue.append(child)
             np.remove(prep_root)
-            queue.remove(prep_root)
+            queue = remove_token(queue, prep_root)
             if len(queue) > 0:
                 prep_root = queue[0]
         return np
-
-    @staticmethod
-    def _get_root_ix(subtree: List[Token]) -> int:
-        root_ix = next(
-            x.ix for x in subtree
-            if x.dependency_head_ix not in [y.ix for y in subtree])
-        return root_ix
 
     def _get_subtree(
             self,
@@ -184,7 +189,7 @@ class Sentence:
             for child in children:
                 subtree.append(child)
                 queue.append(child)
-            queue.remove(root)
+            queue = remove_token(queue, root)
             if len(queue) > 0:
                 root = queue[0]
         subtree = self._sort_tokens(subtree)
@@ -204,7 +209,7 @@ class Sentence:
                 for y in appos_subtree:
                     # this check required as may already have been removed
                     if y in subtree:
-                        subtree.remove(y)
+                        subtree = remove_token(subtree, y)
 
         # finally, make sure the tokens are sorted correctly before returning
         return self._sort_tokens(subtree)
@@ -219,7 +224,7 @@ class Sentence:
             self,
             np: List[Token]
     ) -> List[List[Token]]:
-        root_ix = self._get_root_ix(np)
+        root_ix = get_root(np).ix
         prep_nps = []
         preps = [x for x in np if x.dependency_type == 'prep']
         # basically, just add the subtrees of parents for each prep, minus the
@@ -247,7 +252,7 @@ class Sentence:
                and root.pos != 'NOUN'
 
     def _fix_np(self, subtree: List[Token], det: bool) -> List[Token]:
-        root_ix = self._get_root_ix(subtree)
+        root_ix = get_root(subtree).ix
 
         # if the subtree contains a non-root `appos`, remove that
         subtree = self._remove_appos(subtree, root_ix)
@@ -258,7 +263,7 @@ class Sentence:
         return subtree
 
     def _np_is_valid(self, subtree: List[Token]) -> bool:
-        root_ix = self._get_root_ix(subtree)
+        root_ix = get_root(subtree).ix
 
         # in the case of an attr, check that the head is a noun
         if self._subtree_head_missing_required_noun(subtree, root_ix):
