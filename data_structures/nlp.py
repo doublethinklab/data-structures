@@ -168,7 +168,7 @@ class Sentence:
             children = [x for x in np if x.dependency_head_ix == prep_root.ix]
             for child in children:
                 queue.append(child)
-            np.remove(prep_root)
+            np = remove_token(np, prep_root)
             queue = remove_token(queue, prep_root)
             if len(queue) > 0:
                 prep_root = queue[0]
