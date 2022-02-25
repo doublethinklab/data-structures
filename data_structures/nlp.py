@@ -202,7 +202,9 @@ class Sentence:
             if x.ix != root_ix:
                 appos_subtree, _ = self._get_subtree(x.ix, subtree)
                 for y in appos_subtree:
-                    subtree.remove(y)
+                    # this check required as may already have been removed
+                    if y in subtree:
+                        subtree.remove(y)
 
         # finally, make sure the tokens are sorted correctly before returning
         return self._sort_tokens(subtree)
