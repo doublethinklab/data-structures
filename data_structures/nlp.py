@@ -332,7 +332,7 @@ def get_tree_info(
     dep2ixs = {}
     for token in tokens:
         token_ix = ix2list[token.ix]
-        if token.dependency_head_ix:
+        if token.dependency_head_ix and token.dependency_head_ix in ix2list:
             head_ix = ix2list[token.dependency_head_ix]
             children[head_ix].append(token_ix)
         if token.dependency_type not in dep2ixs:

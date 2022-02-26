@@ -106,10 +106,25 @@ class TestMergeTokens(unittest.TestCase):
 class TestNounPhrases(unittest.TestCase):
 
     def test_case_1(self):
-        with open('temp/prob_doc.dill', 'rb') as f:
+        with open('temp/prob_doc1.dill', 'rb') as f:
             doc = dill.loads(f.read())
         # TODO: looks like max_len not working?
-        print(doc.get_noun_phrases())
+        error = False
+        try:
+            doc.get_noun_phrases()
+        except:
+            error = True
+        self.assertFalse(error)
+
+    def test_case_2(self):
+        with open('temp/prob_doc2.dill', 'rb') as f:
+            doc = dill.loads(f.read())
+        error = False
+        try:
+            doc.get_noun_phrases()
+        except:
+            error = True
+        self.assertFalse(error)
 
     def test_get_noun_phrases_with_determiner(self):
         tokens = [
