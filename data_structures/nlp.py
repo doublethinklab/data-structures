@@ -140,9 +140,15 @@ class Sentence(NlpBase):
                     # if left is a PREP, increment
                     if self.tokens[left].dependency_type == 'prep':
                         left += 1
+                    # if no tokens left, skip
+                    if left > len(self.tokens) - 1:
+                        continue
                     # if left is a det and we don't want it, increment
                     if self.tokens[left].dependency_type == 'det' and not det:
                         left += 1
+                    # if no tokens left, skip
+                    if left > len(self.tokens) - 1:
+                        continue
                     # check if we are left with just one token
                     if right - left < 2:
                         continue

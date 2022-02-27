@@ -127,6 +127,16 @@ class TestNounPhrases(unittest.TestCase):
             error = True
         self.assertFalse(error)
 
+    def test_case_3(self):
+        with open('temp/prob_doc3.dill', 'rb') as f:
+            doc = dill.loads(f.read())
+        error = False
+        try:
+            doc.get_noun_phrases()
+        except:
+            error = True
+        self.assertFalse(error)
+
     def test_get_noun_phrases_with_determiner(self):
         tokens = [
             Token('I', ix=0, dependency_head_ix=1, dependency_type='nsubj'),
