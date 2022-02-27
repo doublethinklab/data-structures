@@ -112,8 +112,9 @@ class TestNounPhrases(unittest.TestCase):
         error = False
         try:
             doc.get_noun_phrases()
-        except:
+        except Exception as e:
             error = True
+            raise e
         self.assertFalse(error)
 
     def test_case_2(self):
@@ -186,3 +187,28 @@ class TestNounPhrases(unittest.TestCase):
             ],
         ]
         self.assertEqual(expected, nps)
+
+
+class TestVerbPhrases(unittest.TestCase):
+
+    def test_case_1(self):
+        with open('temp/prob_doc1.dill', 'rb') as f:
+            doc = dill.loads(f.read())
+        # TODO: looks like max_len not working?
+        error = False
+        try:
+            doc.get_verb_phrases()
+        except Exception as e:
+            error = True
+            raise e
+        self.assertFalse(error)
+
+    def test_case_2(self):
+        with open('temp/prob_doc2.dill', 'rb') as f:
+            doc = dill.loads(f.read())
+        error = False
+        try:
+            doc.get_verb_phrases()
+        except:
+            error = True
+        self.assertFalse(error)
