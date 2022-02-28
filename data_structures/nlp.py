@@ -300,6 +300,13 @@ class Document(NlpBase):
         return vps
 
     @property
+    def sentences(self) -> List[Sentence]:
+        sentences = []
+        for paragraph in self.paragraphs:
+            sentences += paragraph.sentences
+        return sentences
+
+    @property
     def text(self) -> str:
         return '\n\n'.join([str(x) for x in self.paragraphs])
 
