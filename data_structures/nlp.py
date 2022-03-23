@@ -1,16 +1,30 @@
-from typing import List, Optional
+import dill
+from typing import Dict, List, Optional, Tuple
+
+from data_structures import base
 
 
-class Token:
+class NlpBase:
 
-    def __init__(self,
-                 text: str,
-                 pos: Optional[str] = None,
-                 lemma: Optional[str] = None,
-                 is_entity: Optional[bool] = None,
-                 entity_type: Optional[str] = None,
-                 is_hashtag: Optional[bool] = None,
-                 is_stop: Optional[bool] = None):
+    def serialize(self):
+        return dill.dumps(self)
+
+
+class Token(NlpBase):
+
+    def __init__(
+            self,
+            text: str,
+            pos: Optional[str] = None,
+            lemma: Optional[str] = None,
+            is_entity: Optional[bool] = None,
+            entity_type: Optional[str] = None,
+            is_hashtag: Optional[bool] = None,
+            is_stop: Optional[bool] = None,
+            ix: Optional[int] = None,
+            dependency_head_ix: Optional[int] = None,
+            dependency_type: Optional[str] = None
+    ):
         self.text = text
         self.pos = pos
         self.lemma = lemma
@@ -46,6 +60,7 @@ class Token:
                     lemma=self.lemma if copy_meta_attrs else None,
                     is_entity=self.is_entity if copy_meta_attrs else None,
                     entity_type=self.entity_type if copy_meta_attrs else None,
+                    is_hashtag=self.is_hashtag,
                     is_stop=self.is_stop if copy_meta_attrs else None,
                     ix=None,   # no way to do this without moving others so None
                     dependency_head_ix=self.dependency_head_ix
@@ -203,7 +218,7 @@ class Sentence(NlpBase):
         return ' '.join([str(x) for x in self.tokens])
 
 
-class Paragraph:
+class Paragraph(NlpBase):
 
     def __init__(self, sentences: List[Sentence]):
         self.sentences = sentences
@@ -372,6 +387,8 @@ def merge_tokens(
         # again, use the last token as a heuristic
         is_entity=tokens[-1].is_entity,
         entity_type=tokens[-1].entity_type,
+        #
+        is_hashtag=all(t.is_hashtag for t in tokens),
         # this is only a stop if all tokens are stops
         is_stop=all(x.is_stop for x in tokens),
         # this should be the root/head of the subsequence

@@ -75,30 +75,30 @@ class TestMergeTokens(unittest.TestCase):
 
     def test_merge_tokens_case_1_do_not_merge_det(self):
         tokens = [
-            Token('the', 'DET', 'the', False, '', False, 0, 1, 'det'),
-            Token('Los', 'PROPN', 'Los', False, '', False, 1, 2, 'nn'),
-            Token('Angeles', 'PROPN', 'Angel', False, '', False, 2, 3, 'nn'),
-            Token('Lakers', 'PROPN', 'Laker', False, '', False, 3, 4, 'nsubj'),
+            Token('the', 'DET', 'the', False, '', False, False, 0, 1, 'det'),
+            Token('Los', 'PROPN', 'Los', False, '', False, False, 1, 2, 'nn'),
+            Token('Angeles', 'PROPN', 'Angel', False, '', False, False, 2, 3, 'nn'),
+            Token('Lakers', 'PROPN', 'Laker', False, '', False, False, 3, 4, 'nsubj'),
         ]
         merged = merge_tokens(tokens, merge_det=False)
         expected = [
-            Token('the', 'DET', 'the', False, '', False, 0, 1, 'det'),
+            Token('the', 'DET', 'the', False, '', False, False, 0, 1, 'det'),
             Token('Los Angeles Lakers', 'PROPN', 'Los Angel Laker', False, '',
-                  False, 3, 4, 'nsubj'),
+                  False, False, 3, 4, 'nsubj'),
         ]
         self.assertEqual(expected, merged)
 
     def test_merge_tokens_case_1_do_merge_det(self):
         tokens = [
-            Token('the', 'DET', 'the', False, '', False, 0, 1, 'det'),
-            Token('Los', 'PROPN', 'Los', False, '', False, 1, 2, 'nn'),
-            Token('Angeles', 'PROPN', 'Angel', False, '', False, 2, 3, 'nn'),
-            Token('Lakers', 'PROPN', 'Laker', False, '', False, 3, 4, 'nsubj'),
+            Token('the', 'DET', 'the', False, '', False, False, 0, 1, 'det'),
+            Token('Los', 'PROPN', 'Los', False, '', False, False, 1, 2, 'nn'),
+            Token('Angeles', 'PROPN', 'Angel', False, '', False, False, 2, 3, 'nn'),
+            Token('Lakers', 'PROPN', 'Laker', False, '', False, False, 3, 4, 'nsubj'),
         ]
         merged = merge_tokens(tokens, merge_det=True)
         expected = [
             Token('the Los Angeles Lakers', 'PROPN', 'the Los Angel Laker',
-                  False, '', False, 3, 4, 'nsubj'),
+                  False, '', False, False, 3, 4, 'nsubj'),
         ]
         self.assertEqual(expected, merged)
 
