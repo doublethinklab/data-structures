@@ -9,12 +9,14 @@ class Token:
                  lemma: Optional[str] = None,
                  is_entity: Optional[bool] = None,
                  entity_type: Optional[str] = None,
+                 is_hashtag: Optional[bool] = None,
                  is_stop: Optional[bool] = None):
         self.text = text
         self.pos = pos
         self.lemma = lemma
         self.is_entity = is_entity
         self.entity_type = entity_type
+        self.is_hashtag = is_hashtag
         self.is_stop = is_stop
 
     def __eq__(self, other):
@@ -73,6 +75,10 @@ class Sentence:
         return [x for x in self.tokens if x.is_entity]
 
     @property
+    def hashtags(self) -> List[Token]:
+        return [x for x in self.tokens if x.is_hashtag]
+
+    @property
     def text(self) -> str:
         return ' '.join([str(x) for x in self.tokens])
 
@@ -95,6 +101,13 @@ class Paragraph:
         for x in self.sentences:
             entities += x.entities
         return entities
+
+    @property
+    def hashtags(self) -> List[Token]:
+        hashtags = []
+        for x in self.sentences:
+            hashtags += x.hashtags
+        return hashtags
 
     @property
     def text(self) -> str:
@@ -126,6 +139,13 @@ class Document:
         for x in self.paragraphs:
             entities += x.entities
         return entities
+
+    @property
+    def hashtags(self) -> List[Token]:
+        hashtags = []
+        for x in self.paragraphs:
+            hashtags += x.hashtags
+        return hashtags
 
     @property
     def text(self) -> str:
