@@ -20,6 +20,8 @@ class Token(NlpBase):
             is_entity: Optional[bool] = None,
             entity_type: Optional[str] = None,
             is_hashtag: Optional[bool] = None,
+            is_mention: Optional[bool] = None,
+            is_url: Optional[bool] = None,
             is_stop: Optional[bool] = None,
             ix: Optional[int] = None,
             dependency_head_ix: Optional[int] = None,
@@ -31,6 +33,8 @@ class Token(NlpBase):
         self.is_entity = is_entity
         self.entity_type = entity_type
         self.is_hashtag = is_hashtag
+        self.is_mention = is_mention
+        self.is_url = is_url
         self.is_stop = is_stop
         self.ix = ix
         self.dependency_head_ix = dependency_head_ix
@@ -60,8 +64,10 @@ class Token(NlpBase):
                     lemma=self.lemma if copy_meta_attrs else None,
                     is_entity=self.is_entity if copy_meta_attrs else None,
                     entity_type=self.entity_type if copy_meta_attrs else None,
-                    is_hashtag=self.is_hashtag,
+                    is_hashtag=self.is_hashtag if copy_meta_attrs else None,
                     is_stop=self.is_stop if copy_meta_attrs else None,
+                    is_mention=self.is_mention if copy_meta_attrs else None,
+                    is_url=self.is_url if copy_meta_attrs else None,
                     ix=None,   # no way to do this without moving others so None
                     dependency_head_ix=self.dependency_head_ix
                         if copy_meta_attrs else None,
@@ -97,6 +103,14 @@ class Sentence(NlpBase):
     @property
     def hashtags(self) -> List[Token]:
         return [x for x in self.tokens if x.is_hashtag]
+
+    @property
+    def mentions(self) -> List[Token]:
+        return [x for x in self.tokens if x.is_mention]
+
+    @property
+    def urls(self) -> List[Token]:
+        return [x for x in self.tokens if x.is_url]
 
     def get_noun_phrases(
             self,
@@ -244,6 +258,20 @@ class Paragraph(NlpBase):
             hashtags += x.hashtags
         return hashtags
 
+    @property
+    def mentions(self) -> List[Token]:
+        mentions = []
+        for x in self.sentences:
+            mentions += x.mentions
+        return mentions
+
+    @property
+    def urls(self) -> List[Token]:
+        urls = []
+        for x in self.sentences:
+            urls += x.urls
+        return urls
+
     def get_noun_phrases(
             self,
             det: bool = False,
@@ -297,6 +325,20 @@ class Document(NlpBase):
         for x in self.paragraphs:
             hashtags += x.hashtags
         return hashtags
+
+    @property
+    def mentions(self) -> List[Token]:
+        mentions = []
+        for x in self.paragraphs:
+            mentions += x.mentions
+        return mentions
+
+    @property
+    def urls(self) -> List[Token]:
+        urls = []
+        for x in self.paragraphs:
+            urls += x.urls
+        return urls
 
     def get_noun_phrases(
             self,
@@ -389,6 +431,8 @@ def merge_tokens(
         entity_type=tokens[-1].entity_type,
         #
         is_hashtag=all(t.is_hashtag for t in tokens),
+        is_mention=all(t.is_mention for t in tokens),
+        is_url=all(t.is_url for t in tokens),
         # this is only a stop if all tokens are stops
         is_stop=all(x.is_stop for x in tokens),
         # this should be the root/head of the subsequence
