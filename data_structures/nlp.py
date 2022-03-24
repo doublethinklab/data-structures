@@ -15,6 +15,7 @@ class Token(NlpBase):
     def __init__(
             self,
             text: str,
+            start_char_ix: Optional[int] = None,
             pos: Optional[str] = None,
             lemma: Optional[str] = None,
             is_entity: Optional[bool] = None,
@@ -48,6 +49,13 @@ class Token(NlpBase):
 
     def __repr__(self):
         return self.text
+
+    @property
+    def end_char_ix(self) -> int:
+        if self.start_char_ix is None:
+            return -1
+        else:
+            return self.start_char_ix + len(self.text)
 
     def split(
             self,
