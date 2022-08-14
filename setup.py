@@ -15,5 +15,5 @@ setuptools.setup(
     description='Explicitly defined data structures.',
     url=f'https://github.com/doublethinklab/data-structures.git#{version}',
     packages=setuptools.find_packages(),
-    python_requires='>=3.9.5',
+    python_requires='>=3.8',
     install_requires=required)
